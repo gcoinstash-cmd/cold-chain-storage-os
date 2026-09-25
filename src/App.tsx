@@ -1,67 +1,46 @@
 import React, { useState } from 'react';
 import { 
-  Truck, Shield, Award, ArrowRight, Calendar, DollarSign, Lock, 
+  Thermometer, Shield, Award, ArrowRight, Calendar, DollarSign, Lock, 
   ChevronRight, CheckCircle2, Sparkles, Layers, Terminal, Server,
-  AlertCircle, Check, Phone, Plane, Thermometer, Compass, Fuel, Gauge
+  AlertCircle, Check, Phone, Plane, Compass, Fuel, Gauge,
+  Clock, Truck, Box, Snowflake, AlertTriangle, X
 } from 'lucide-react';
 import { AdminPortalModal } from './AdminPortalModal.tsx';
 
-interface ShowcaseItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  rate: string;
-  status: string;
-  features: string[];
-  img: string;
+interface DockSlot {
+  dock: string;
+  time: string;
+  tempClass: 'DEEP FREEZE (-20°F)' | 'CHILLED PRODUCE (34°F)' | 'PHARMA COLD (38°F)' | 'CONTROLLED AMBIENT (55°F)';
+  status: 'COOLING' | 'STAGING' | 'READY' | 'OCCUPIED';
+  carrier: string;
+  pallets: number;
 }
 
-const ITEMS: ShowcaseItem[] = [
-  {
-    "id": "ZONE-A1",
-    "title": "Deep Freeze Cryo-Vault (-20°F to -10°F)",
-    "subtitle": "Industrial Blast Freezers // Biopharma & Premium Frozen Proteins",
-    "rate": "$48 / Pallet / Month + In/Out",
-    "status": "MONITORED REAL-TIME // PASS",
-    "features": [
-      "Redundant Ammonia Cryo-Chillers",
-      "Automated High-Density Shuttle Racks",
-      "Continuous IoT NIST Thermocouples",
-      "Backup Power Generators (1.5 MW)"
-    ],
-    "img": "https://images.unsplash.com/photo-1587293852726-70cdb56c2866"
-  },
-  {
-    "id": "ZONE-B4",
-    "title": "Chilled Agricultural Produce Room (32°F to 36°F)",
-    "subtitle": "Controlled Atmosphere (90% RH) // Berry, Floral & Dairy Pallets",
-    "rate": "$36 / Pallet / Month",
-    "status": "TEMPERATURE CALIBRATED",
-    "features": [
-      "Ethylene Scrubbing Filtration",
-      "Automated Humidity Regulation",
-      "Cross-Dock Rapid Distribution Lanes",
-      "Sanitary Sealed Dock Levelers"
-    ],
-    "img": "https://images.unsplash.com/photo-1553413077-190dd305871c"
-  },
-  {
-    "id": "BAY-DOCK-08",
-    "title": "Reefer Yard Gate & Inbound Dock Appointment",
-    "subtitle": "Fast-Track Check-In // Pre-Cooled Carrier Dock Seals // FSMA Log",
-    "rate": "Turnaround Time: 38 Mins Avg",
-    "status": "SCHEDULED // YARD BAY 08",
-    "features": [
-      "Automated Digital BOL Sign-off",
-      "Core Probe Temperature Verification",
-      "Lumper Labor Scheduling Gate",
-      "Instant HACCP Deviation Alert System"
-    ],
-    "img": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d"
-  }
+const DOCK_MATRIX: DockSlot[] = [
+  { dock: "BAY 01", time: "06:00 - 08:00", tempClass: "DEEP FREEZE (-20°F)", status: "OCCUPIED", carrier: "Swift Cold #4112", pallets: 26 },
+  { dock: "BAY 01", time: "08:00 - 10:00", tempClass: "DEEP FREEZE (-20°F)", status: "COOLING", carrier: "Lineage Direct #902", pallets: 24 },
+  { dock: "BAY 01", time: "10:00 - 12:00", tempClass: "DEEP FREEZE (-20°F)", status: "READY", carrier: "Unassigned", pallets: 28 },
+  
+  { dock: "BAY 02", time: "06:00 - 08:00", tempClass: "CHILLED PRODUCE (34°F)", status: "READY", carrier: "Unassigned", pallets: 26 },
+  { dock: "BAY 02", time: "08:00 - 10:00", tempClass: "CHILLED PRODUCE (34°F)", status: "STAGING", carrier: "Driscoll Berry Exp", pallets: 22 },
+  { dock: "BAY 02", time: "10:00 - 12:00", tempClass: "CHILLED PRODUCE (34°F)", status: "OCCUPIED", carrier: "FreshDirect #18", pallets: 26 },
+
+  { dock: "BAY 03", time: "06:00 - 08:00", tempClass: "PHARMA COLD (38°F)", status: "STAGING", carrier: "Pfizer Bio Cold #09", pallets: 14 },
+  { dock: "BAY 03", time: "08:00 - 10:00", tempClass: "PHARMA COLD (38°F)", status: "READY", carrier: "Unassigned", pallets: 18 },
+  { dock: "BAY 03", time: "10:00 - 12:00", tempClass: "PHARMA COLD (38°F)", status: "COOLING", carrier: "McKesson Med Line", pallets: 16 },
+
+  { dock: "BAY 04", time: "06:00 - 08:00", tempClass: "CONTROLLED AMBIENT (55°F)", status: "READY", carrier: "Unassigned", pallets: 30 },
+  { dock: "BAY 04", time: "08:00 - 10:00", tempClass: "CONTROLLED AMBIENT (55°F)", status: "OCCUPIED", carrier: "Constellation Wine", pallets: 28 },
+  { dock: "BAY 04", time: "10:00 - 12:00", tempClass: "CONTROLLED AMBIENT (55°F)", status: "STAGING", carrier: "Napa Reserve Float", pallets: 24 }
 ];
 
 export default function App() {
+  const [selectedTemp, setSelectedTemp] = useState<string>('ALL');
+  const [selectedSlot, setSelectedSlot] = useState<DockSlot | null>(null);
+  const [carrierInput, setCarrierInput] = useState('');
+  const [palletInput, setPalletInput] = useState(24);
+  const [confirmedReservation, setConfirmedReservation] = useState(false);
+
   const [isAdminOpen, setIsAdminOpen] = useState(
     typeof window !== 'undefined' && (
       window.location.search.includes('admin') || 
@@ -69,257 +48,194 @@ export default function App() {
       window.location.hash === '#admin'
     )
   );
-  const [selectedItem, setSelectedItem] = useState(ITEMS[0].id);
-  const [inquiryName, setInquiryName] = useState('');
-  const [inquiryPhone, setInquiryPhone] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inquiryName || !inquiryPhone) return;
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setInquiryName('');
-      setInquiryPhone('');
-    }, 4000);
+  const filtered = DOCK_MATRIX.filter(slot => 
+    selectedTemp === 'ALL' || slot.tempClass.includes(selectedTemp)
+  );
+
+  const handleSelectSlot = (slot: DockSlot) => {
+    setSelectedSlot(slot);
+    setCarrierInput(slot.carrier !== 'Unassigned' ? slot.carrier : '');
+    setConfirmedReservation(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-zinc-100 font-sans selection:bg-amber-500/20 selection:text-amber-400">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-[#0A0A0B]/90 backdrop-blur-md border-b border-zinc-800/80 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-zinc-950 font-extrabold shadow-lg shadow-amber-600/20">
-              <Truck className="w-5 h-5 text-zinc-950" />
-            </div>
-            <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-amber-500 font-semibold">Temperature-Controlled Cold Storage & Reefer Dock OS</span>
-              <h1 className="text-lg font-bold tracking-tight text-white leading-none">COLD CHAIN STORAGE OS</h1>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#090A0E] text-zinc-100 flex flex-col font-sans selection:bg-cyan-400 selection:text-black">
+      {/* Top Telemetry Header */}
+      <header className="border-b border-zinc-800 bg-[#0E1017] px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-30 font-mono text-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse" />
+          <span className="font-bold tracking-wider text-cyan-400 flex items-center gap-2 text-base">
+            <Snowflake size={18} /> CRYO-DOCK // COLD CHAIN STORAGE & DOCK RESERVATION MATRIX
+          </span>
+          <span className="text-zinc-600">|</span>
+          <span className="text-zinc-400 uppercase text-xs">ARCHETYPE D: TIMELINE & STATION RESERVATION GRID</span>
+        </div>
 
-          <div className="hidden md:flex items-center gap-8 text-xs font-medium uppercase tracking-wider text-zinc-400">
-            <a href="#inventory" className="hover:text-amber-400 transition">Fleet Roster</a>
-            <a href="#telemetry" className="hover:text-amber-400 transition">Telematics</a>
-            <a href="#specs" className="hover:text-amber-400 transition">Compliance</a>
-            <a href="#dispatch" className="hover:text-amber-400 transition">Book Dispatch</a>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-emerald-400">
+            <Thermometer size={14} />
+            <span>FDA FSMA & USDA SANITARY TRANSPORT COMPLIANT</span>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsAdminOpen(true)}
-              className="px-4 py-2 rounded-lg bg-zinc-900 border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 text-xs font-mono uppercase tracking-wider transition flex items-center gap-2"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span>[ DISPATCH PASS ]</span>
-            </button>
-          </div>
+          <button 
+            onClick={() => setIsAdminOpen(true)}
+            className="px-3.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded-lg text-xs font-mono font-bold transition-all"
+          >
+            [ DOCK MASTER PASS ]
+          </button>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative pt-20 pb-24 px-6 overflow-hidden border-b border-zinc-800">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(245,158,11,0.15),rgba(255,255,255,0))]"></div>
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono mb-6">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>COMMERCIAL FLEET ENGINE • 9.8 VERIFIED PRODUCTION GRADE</span>
-          </div>
-
-          <h2 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
-            COLD <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500">CHAIN STORAGE OS</span>
-          </h2>
-
-          <p className="mt-6 text-lg sm:text-xl text-zinc-400 max-w-3xl mx-auto leading-relaxed">
-            Sub-Zero Storage Zones, Dock Queues & FSMA Audit Logs. High-utilization asset dispatch, real-time telemetry, and turnkey Supabase PostgreSQL database schemas.
-          </p>
-
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#dispatch"
-              className="px-8 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-sm tracking-wide transition shadow-lg shadow-amber-500/25 flex items-center gap-2"
-            >
-              <span>Instant Fleet Dispatch</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
-            <button
-              onClick={() => setIsAdminOpen(true)}
-              className="px-8 py-3.5 rounded-xl bg-zinc-900 border border-zinc-700 hover:border-amber-500/40 text-zinc-200 text-sm font-semibold transition flex items-center gap-2"
-            >
-              <span>Launch Supervisor OS</span>
-              <span className="text-amber-400 font-mono text-xs font-bold">[coldchain2026]</span>
-            </button>
-          </div>
-
-          {/* Metrics Ticker */}
-          <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-            
-              <div key="CONTROLLED TEMP ZONES" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">CONTROLLED TEMP ZONES</span>
-                <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"-20°F TO 36°F"}</p>
-              </div>
-            
-              <div key="REEFER DOCK BAYS" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">REEFER DOCK BAYS</span>
-                <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"24 BAYS ACTIVE"}</p>
-              </div>
-            
-              <div key="PALLET CAPACITY RACKING" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">PALLET CAPACITY RACKING</span>
-                <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"18,500 POSITIONS"}</p>
-              </div>
-            
-              <div key="FSMA COMPLIANCE SCORE" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">FSMA COMPLIANCE SCORE</span>
-                <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"99.98%"}</p>
-              </div>
-            
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase Grid */}
-      <section id="inventory" className="py-20 px-6 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl mx-auto w-full p-6 sm:p-8 space-y-8">
+        {/* Status Chips Legend & Temperature Filter Bar */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-zinc-800">
           <div>
-            <span className="text-xs font-mono text-amber-500 uppercase tracking-widest block mb-2">OPERATIONAL LINEUP</span>
-            <h3 className="text-3xl font-extrabold text-white">Featured Fleet & Priority Units</h3>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
+              <Clock className="text-cyan-400" /> Real-Time Bay Schedule & Temperature Grid
+            </h1>
+            <p className="text-sm text-zinc-400 mt-1">
+              Select an open or cooling dock slot to assign carrier bill of lading and trigger automated pre-cooling telemetry.
+            </p>
           </div>
-          <span className="text-sm text-zinc-400 mt-2 md:mt-0 font-mono">100% Inspected & Live Telematics Connected</span>
+
+          <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
+            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> READY</div>
+            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-400" /> COOLING</div>
+            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> STAGING</div>
+            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500" /> OCCUPIED</div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {ITEMS.map((item) => (
-            <div 
-              key={item.id}
-              className="group rounded-2xl bg-[#121214] border border-zinc-800 hover:border-amber-500/40 transition-all overflow-hidden flex flex-col shadow-xl"
+        {/* Temperature Zone Filter Pills */}
+        <div className="flex flex-wrap gap-2 font-mono text-xs">
+          {['ALL', 'DEEP FREEZE', 'CHILLED PRODUCE', 'PHARMA COLD', 'CONTROLLED AMBIENT'].map(t => (
+            <button
+              key={t}
+              onClick={() => setSelectedTemp(t)}
+              className={`px-4 py-2 rounded-xl border transition-all ${
+                selectedTemp === t
+                  ? 'bg-cyan-400 text-black border-cyan-400 font-black'
+                  : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-700'
+              }`}
             >
-              <div className="relative h-56 overflow-hidden bg-zinc-900">
-                <img 
-                  src={item.img} 
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent"></div>
-                <div className="absolute top-4 right-4 px-2.5 py-1 rounded bg-black/70 backdrop-blur-md border border-zinc-700 text-xs font-semibold font-mono font-bold text-amber-400">
-                  {item.status}
+              {t}
+            </button>
+          ))}
+        </div>
+
+        {/* The 24-Hour Dock Reservation Matrix */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((slot, index) => (
+            <div 
+              key={`${slot.dock}-${slot.time}`}
+              onClick={() => handleSelectSlot(slot)}
+              className={`p-5 rounded-2xl border transition-all cursor-pointer bg-[#11131A] hover:border-cyan-500/60 relative flex flex-col justify-between ${
+                selectedSlot?.dock === slot.dock && selectedSlot?.time === slot.time 
+                  ? 'border-cyan-400 ring-2 ring-cyan-400/30' 
+                  : 'border-zinc-800'
+              }`}
+            >
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-mono text-sm font-black text-white">{slot.dock}</span>
+                  <span className={`text-[11px] font-mono px-2 py-0.5 rounded font-black tracking-wider ${
+                    slot.status === 'READY' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
+                    slot.status === 'COOLING' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' :
+                    slot.status === 'STAGING' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' :
+                    'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                  }`}>
+                    {slot.status}
+                  </span>
+                </div>
+
+                <div className="text-xs font-mono text-cyan-300 font-bold mb-1 flex items-center gap-1.5">
+                  <Thermometer size={14} />
+                  <span>{slot.tempClass}</span>
+                </div>
+
+                <div className="text-xs text-zinc-400 font-mono mb-4 flex items-center gap-1.5">
+                  <Clock size={14} className="text-zinc-500" />
+                  <span>{slot.time}</span>
                 </div>
               </div>
 
-              <div className="p-6 flex-1 flex flex-col justify-between">
+              <div className="pt-3 border-t border-zinc-800/80 flex justify-between items-center text-xs font-mono">
                 <div>
-                  <span className="text-xs font-mono text-amber-400 uppercase tracking-wider block mb-1">{item.id}</span>
-                  <h4 className="text-xl font-bold text-white mb-2 leading-tight">{item.title}</h4>
-                  <p className="text-base text-zinc-200 leading-relaxed mb-4">{item.subtitle}</p>
-
-                  <div className="space-y-2 mb-6">
-                    {item.features.map((feat, i) => (
-                      <div key={i} className="flex items-center gap-2 text-xs text-zinc-300 font-mono">
-                        <Check className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <span className="text-zinc-500 block text-[10px]">CARRIER</span>
+                  <span className="text-zinc-200 font-bold truncate max-w-[140px] block">{slot.carrier}</span>
                 </div>
-
-                <div className="pt-4 border-t border-zinc-800/80 flex items-center justify-between">
-                  <span className="text-sm font-bold text-amber-400 font-mono">{item.rate}</span>
-                  <a
-                    href="#dispatch"
-                    onClick={() => setSelectedItem(item.id)}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-amber-500 hover:text-zinc-950 text-zinc-200 text-xs font-semibold transition"
-                  >
-                    Reserve Unit
-                  </a>
+                <div className="text-right">
+                  <span className="text-zinc-500 block text-[10px]">PALLET CAPACITY</span>
+                  <span className="text-white font-bold">{slot.pallets} Pallets</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </section>
+      </main>
 
-      {/* Booking / Dispatch Intake */}
-      <section id="dispatch" className="py-20 px-6 bg-zinc-950 border-t border-zinc-800">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-xs font-mono text-amber-500 uppercase tracking-widest block mb-2">INSTANT BOOKING DISPATCH</span>
-            <h3 className="text-3xl font-extrabold text-white">Reserve Machinery or File Dispatch Mandate</h3>
-            <p className="text-zinc-400 text-sm mt-3">Direct integration into PostgreSQL delivery dispatches with zero friction.</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="p-8 rounded-2xl bg-[#121214] border border-amber-500/20 shadow-2xl space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-semibold font-mono uppercase text-zinc-400 mb-2">Company / Mandate Entity</label>
-                <input
-                  type="text"
-                  required
-                  value={inquiryName}
-                  onChange={(e) => setInquiryName(e.target.value)}
-                  placeholder="e.g. Apex Infrastructure Partners LLC"
-                  className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-zinc-100 focus:outline-none focus:border-amber-500 text-sm font-sans"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold font-mono uppercase text-zinc-400 mb-2">Dispatch Contact Direct Line</label>
-                <input
-                  type="tel"
-                  required
-                  value={inquiryPhone}
-                  onChange={(e) => setInquiryPhone(e.target.value)}
-                  placeholder="+1 (555) 019-2834"
-                  className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-zinc-100 focus:outline-none focus:border-amber-500 text-sm font-sans"
-                />
-              </div>
-            </div>
+      {/* Dock Reservation Modal */}
+      {selectedSlot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#12141C] border border-cyan-500/50 w-full max-w-md rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl font-mono text-sm relative">
+            <button 
+              onClick={() => setSelectedSlot(null)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
 
             <div>
-              <label className="block text-sm font-semibold font-mono uppercase text-zinc-400 mb-2">Selected Priority Asset</label>
-              <select
-                value={selectedItem}
-                onChange={(e) => setSelectedItem(e.target.value)}
-                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-zinc-100 focus:outline-none focus:border-amber-500 text-sm font-sans"
-              >
-                {ITEMS.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.id} - {item.title} ({item.rate})
-                  </option>
-                ))}
-              </select>
+              <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest">
+                DOCK BAY RESERVATION DECK
+              </span>
+              <h2 className="text-2xl font-black text-white mt-1">
+                {selectedSlot.dock} — {selectedSlot.time}
+              </h2>
+              <p className="text-xs text-zinc-400 mt-1">{selectedSlot.tempClass}</p>
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-sm uppercase tracking-wider transition shadow-lg shadow-amber-500/20"
-            >
-              {submitted ? '✓ MANDATE REGISTERED & TRANSMITTED' : 'SUBMIT DISPATCH RESERVATION REQUEST'}
-            </button>
-          </form>
-        </div>
-      </section>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs text-zinc-400 uppercase">Carrier / Fleet Name</label>
+                <input 
+                  type="text"
+                  placeholder="e.g. Knight-Swift Cold Chain"
+                  value={carrierInput}
+                  onChange={e => setCarrierInput(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm focus:border-cyan-400 outline-none min-h-[44px]"
+                />
+              </div>
 
-      {/* Footer */}
-      <footer className="py-12 px-6 border-t border-zinc-800 bg-[#0A0A0B] text-zinc-300 text-xs font-mono">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="text-zinc-300 font-bold">COLD CHAIN STORAGE OS</span> • Commercial Operating System v1.0.0
-          </div>
-          <div className="flex items-center gap-6">
-            <span>Ghost Factory™ Protocol</span>
-            <span>Supabase RLS Enforced</span>
-            <button
-              onClick={() => setIsAdminOpen(true)}
-              className="text-amber-400 hover:underline"
-            >
-              Admin Portal (coldchain2026)
-            </button>
+              <div className="space-y-1.5">
+                <label className="text-xs text-zinc-400 uppercase">Inbound Pallet Tally</label>
+                <input 
+                  type="number"
+                  value={palletInput}
+                  onChange={e => setPalletInput(Number(e.target.value))}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm focus:border-cyan-400 outline-none min-h-[44px]"
+                />
+              </div>
+            </div>
+
+            {confirmedReservation ? (
+              <div className="p-4 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded-xl text-center text-xs font-bold space-y-1">
+                <div>✓ DOCK APPOINTMENT LOCKED & TELEMETRY SYNCED</div>
+                <div className="text-[11px] text-zinc-300">RFID barcode dispatched to driver cell.</div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmedReservation(true)}
+                className="w-full py-3.5 bg-cyan-400 hover:bg-cyan-300 text-black font-black text-sm rounded-xl transition-all shadow-lg shadow-cyan-400/20 cursor-pointer min-h-[44px]"
+              >
+                CONFIRM BAY RESERVATION
+              </button>
+            )}
           </div>
         </div>
-      </footer>
+      )}
 
-      {/* Admin Modal */}
       <AdminPortalModal isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
     </div>
   );
