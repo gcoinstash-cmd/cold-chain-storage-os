@@ -157,22 +157,22 @@ export default function App() {
           <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
             
               <div key="CONTROLLED TEMP ZONES" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">CONTROLLED TEMP ZONES</span>
+                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">CONTROLLED TEMP ZONES</span>
                 <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"-20°F TO 36°F"}</p>
               </div>
             
               <div key="REEFER DOCK BAYS" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">REEFER DOCK BAYS</span>
+                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">REEFER DOCK BAYS</span>
                 <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"24 BAYS ACTIVE"}</p>
               </div>
             
               <div key="PALLET CAPACITY RACKING" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">PALLET CAPACITY RACKING</span>
+                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">PALLET CAPACITY RACKING</span>
                 <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"18,500 POSITIONS"}</p>
               </div>
             
               <div key="FSMA COMPLIANCE SCORE" className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-sm">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">FSMA COMPLIANCE SCORE</span>
+                <span className="text-xs font-semibold tracking-wider font-mono text-zinc-400 uppercase tracking-wider block">FSMA COMPLIANCE SCORE</span>
                 <p className="text-lg sm:text-xl font-bold font-mono text-amber-400 mt-1">{"99.98%"}</p>
               </div>
             
@@ -203,7 +203,7 @@ export default function App() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent"></div>
-                <div className="absolute top-4 right-4 px-2.5 py-1 rounded bg-black/70 backdrop-blur-md border border-zinc-700 text-[11px] font-mono font-bold text-amber-400">
+                <div className="absolute top-4 right-4 px-2.5 py-1 rounded bg-black/70 backdrop-blur-md border border-zinc-700 text-xs font-semibold font-mono font-bold text-amber-400">
                   {item.status}
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function App() {
                 <div>
                   <span className="text-xs font-mono text-amber-400 uppercase tracking-wider block mb-1">{item.id}</span>
                   <h4 className="text-xl font-bold text-white mb-2 leading-tight">{item.title}</h4>
-                  <p className="text-xs text-zinc-400 mb-4">{item.subtitle}</p>
+                  <p className="text-base text-zinc-200 leading-relaxed mb-4">{item.subtitle}</p>
 
                   <div className="space-y-2 mb-6">
                     {item.features.map((feat, i) => (
@@ -252,7 +252,7 @@ export default function App() {
           <form onSubmit={handleSubmit} className="p-8 rounded-2xl bg-[#121214] border border-amber-500/20 shadow-2xl space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-mono uppercase text-zinc-400 mb-2">Company / Mandate Entity</label>
+                <label className="block text-sm font-semibold font-mono uppercase text-zinc-400 mb-2">Company / Mandate Entity</label>
                 <input
                   type="text"
                   required
@@ -263,7 +263,7 @@ export default function App() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-mono uppercase text-zinc-400 mb-2">Dispatch Contact Direct Line</label>
+                <label className="block text-sm font-semibold font-mono uppercase text-zinc-400 mb-2">Dispatch Contact Direct Line</label>
                 <input
                   type="tel"
                   required
@@ -276,7 +276,7 @@ export default function App() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-zinc-400 mb-2">Selected Priority Asset</label>
+              <label className="block text-sm font-semibold font-mono uppercase text-zinc-400 mb-2">Selected Priority Asset</label>
               <select
                 value={selectedItem}
                 onChange={(e) => setSelectedItem(e.target.value)}
@@ -301,7 +301,7 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-zinc-800 bg-[#0A0A0B] text-zinc-500 text-xs font-mono">
+      <footer className="py-12 px-6 border-t border-zinc-800 bg-[#0A0A0B] text-zinc-300 text-xs font-mono">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-zinc-300 font-bold">COLD CHAIN STORAGE OS</span> • Commercial Operating System v1.0.0

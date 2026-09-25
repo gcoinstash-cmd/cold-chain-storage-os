@@ -76,7 +76,7 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                 <button
                   type="button"
                   onClick={handleAutoFill}
-                  className="py-3 px-4 bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-mono text-xs rounded-xl border border-amber-500/30 transition-colors"
+                  className="py-3 px-4 bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-mono text-base font-semibold min-h-[44px] rounded-xl border border-amber-500/30 transition-colors"
                 >
                   ⚡ Auto-Fill (coldchain2026)
                 </button>
@@ -119,17 +119,17 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                    <span className="text-zinc-500 text-xs font-mono">STATUS</span>
+                    <span className="text-zinc-300 text-xs font-mono">STATUS</span>
                     <p className="text-lg font-bold text-emerald-400 mt-1">FLEET ONLINE</p>
                     <span className="text-xs text-zinc-400">100% Operational Readiness</span>
                   </div>
                   <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                    <span className="text-zinc-500 text-xs font-mono">DATABASE WIRING</span>
+                    <span className="text-zinc-300 text-xs font-mono">DATABASE WIRING</span>
                     <p className="text-lg font-bold text-amber-400 mt-1">RLS ENFORCED</p>
                     <span className="text-xs text-zinc-400">PostgreSQL Schema Ready</span>
                   </div>
                   <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
-                    <span className="text-zinc-500 text-xs font-mono">QUALITY AUDIT</span>
+                    <span className="text-zinc-300 text-xs font-mono">QUALITY AUDIT</span>
                     <p className="text-lg font-bold text-cyan-400 mt-1">9.8 / 10</p>
                     <span className="text-xs text-zinc-400">Verified Production Grade</span>
                   </div>
@@ -176,22 +176,22 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                 <div className="grid grid-cols-2 gap-4">
                   
                     <div key="CONTROLLED TEMP ZONES" className="p-3 rounded-lg bg-zinc-950 border border-zinc-800">
-                      <span className="text-xs text-zinc-500 font-mono">CONTROLLED TEMP ZONES</span>
+                      <span className="text-xs text-zinc-300 font-mono">CONTROLLED TEMP ZONES</span>
                       <p className="text-lg font-bold text-amber-400 font-mono mt-0.5">{"-20°F TO 36°F"}</p>
                     </div>
                   
                     <div key="REEFER DOCK BAYS" className="p-3 rounded-lg bg-zinc-950 border border-zinc-800">
-                      <span className="text-xs text-zinc-500 font-mono">REEFER DOCK BAYS</span>
+                      <span className="text-xs text-zinc-300 font-mono">REEFER DOCK BAYS</span>
                       <p className="text-lg font-bold text-amber-400 font-mono mt-0.5">{"24 BAYS ACTIVE"}</p>
                     </div>
                   
                     <div key="PALLET CAPACITY RACKING" className="p-3 rounded-lg bg-zinc-950 border border-zinc-800">
-                      <span className="text-xs text-zinc-500 font-mono">PALLET CAPACITY RACKING</span>
+                      <span className="text-xs text-zinc-300 font-mono">PALLET CAPACITY RACKING</span>
                       <p className="text-lg font-bold text-amber-400 font-mono mt-0.5">{"18,500 POSITIONS"}</p>
                     </div>
                   
                     <div key="FSMA COMPLIANCE SCORE" className="p-3 rounded-lg bg-zinc-950 border border-zinc-800">
-                      <span className="text-xs text-zinc-500 font-mono">FSMA COMPLIANCE SCORE</span>
+                      <span className="text-xs text-zinc-300 font-mono">FSMA COMPLIANCE SCORE</span>
                       <p className="text-lg font-bold text-amber-400 font-mono mt-0.5">{"99.98%"}</p>
                     </div>
                   
@@ -201,7 +201,7 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
 
             {activeTab === 'sql' && (
               <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 font-mono text-xs text-zinc-300 overflow-x-auto">
-                <div className="text-zinc-500 mb-2">// Supabase PostgreSQL schema with RLS policies enabled</div>
+                <div className="text-zinc-300 mb-2">// Supabase PostgreSQL schema with RLS policies enabled</div>
                 <div className="text-amber-400">ALTER TABLE machinery_fleet ENABLE ROW LEVEL SECURITY;</div>
                 <div className="text-zinc-400 mt-1">CREATE POLICY "Allow authenticated read" ON machinery_fleet FOR SELECT USING (true);</div>
                 <div className="text-emerald-400 mt-2">-- Turnkey database ready in supabase/schema.sql</div>
